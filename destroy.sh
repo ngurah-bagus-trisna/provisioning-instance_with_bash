@@ -1,5 +1,5 @@
 #!/bin/bash
-VOLUME_POOL=/data/instance
+VOLUME_POOL=/data/vms
 IMAGE_POOL=/data/isos
 
 PRE_NET_NAME=$(cat ./genvariable | grep NET_NAME | tr -d 'NET_NAME=' | uniq)
