@@ -1,5 +1,5 @@
 #!/bin/bash
-VOLUME_POOL=/data/instance
+VOLUME_POOL=/data/vms
 IMAGE_POOL=/data/isos
 
 # create network first
@@ -80,8 +80,8 @@ while read line; do
 
     #convert base image to root disk
     printf "\n =========== Convert Cloud Image ============ \n \n"
-    #qemu-img convert -O qcow2 $IMAGE_POOL/$NAME_IMAGE $VOLUME_POOL/$NAME/vda.qcow2
-    qemu-img convert -f raw -O qcow2 $IMAGE_POOL/$NAME_IMAGE $VOLUME_POOL/$NAME/vda.qcow2
+    qemu-img convert -O qcow2 $IMAGE_POOL/$NAME_IMAGE $VOLUME_POOL/$NAME/vda.qcow2
+    #qemu-img convert -f raw -O qcow2 $IMAGE_POOL/$NAME_IMAGE $VOLUME_POOL/$NAME/vda.qcow2
 
     #resize root disk
     qemu-img resize $VOLUME_POOL/$NAME/vda.qcow2 $DISK"G"
@@ -90,25 +90,12 @@ while read line; do
 #cloud-config
 timezone: Asia/Jakarta
 users:
-  - name: ajinha
+  - name: ubuntu
     ssh-authorized-keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH/jpMd00hSkXILXNNvzic+PERIvou28UikpR7ayqgxo ed25519_04/04/2
+      - <ssh-keys>
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     groups: sudo
     shell: /bin/bash
-write_files:
-  - path: /etc/cloud/templates/hosts.debian.tmpl
-    content: |
-      192.168.122.11 k3s-master-1 master-1
-      192.168.122.12 k3s-master-2 master-2
-      192.168.122.13 k3s-master-3 master-3
-
-      192.168.122.21 k3s-worker-1 worker-1
-      192.168.122.22 k3s-worker-2 worker-2
-      192.168.122.50 k3s-addons
-
-      192.168.122.100 k3s-vip
-
 EOF
 
     #create meta-data for cloud-init
@@ -118,12 +105,11 @@ EOF
     # cloud-localds not supported on rhel, rocky, alma.
     # cloud-localds -v $VOLUME_POOL/$NAME/cloud-init.iso $VOLUME_POOL/$NAME/user-data $VOLUME_POOL/$NAME/meta-data
     
-    genisoimage  -output /kvm/instance/$NAME/cloud-init.iso -volid cidata -joliet -rock /kvm/instance/$NAME/user-data /kvm/instance/$NAME/meta-data
+    genisoimage  -output $VOLUME_POOL/$NAME/cloud-init.iso -volid cidata -joliet -rock $VOLUME_POOL/$NAME/user-data $VOLUME_POOL/$NAME/meta-data
     
     printf "\n =========== Configure Network =========== \n\n"
     virsh net-update $NET_NAME add ip-dhcp-host --xml "<host mac='$MAC' name='$NAME' ip='$IP'/>" --live --config
-    virsh net-update $NET_NAME add dns-host "<host ip='$IP'><hostname>$NAME</hostname></host>" --config --live
-
+    # virsh net-update $NET_NAME add dns-host "<host ip='$IP'><hostname>$NAME</hostname></host>" --config --live
 
     #create instance
 
