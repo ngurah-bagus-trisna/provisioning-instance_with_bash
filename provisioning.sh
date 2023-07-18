@@ -6,15 +6,14 @@ IMAGE_POOL=/data/isos
 
 PRE_NET_NAME=$(cat ./genvariable | grep NET_NAME | tr -d 'NET_NAME=' | uniq )
 NET_SUB=$(echo $PRE_NET_NAME | tr -dc '0-9,.')
-ID_NET=$(echo $((RANDOM % 9000 + 1000)))
 
 printf "\n ====== Create Network ======\n"
 
-cat > ./net-$NET_SUB.xml << EOF
+cat > ./$PRE_NET_NAME.xml << EOF
 <network>
   <name>$PRE_NET_NAME</name>
   <forward mode='route'/>
-  <bridge name='virbr$ID_NET' stp='on' delay='0'/>
+  <bridge name='$PRE_NET_NAME' stp='on' delay='0'/>
   <ip address='$NET_SUB.1' netmask='255.255.255.0'>
     <dhcp>
       <range start='$NET_SUB.5' end='$NET_SUB.254'/>
@@ -25,7 +24,7 @@ EOF
 
 printf "\n ======== Start Network ========\n"
 
-virsh net-define --file ./net-$NET_SUB.xml
+virsh net-define --file ./$PRE_NET_NAME.xml
 virsh net-start $PRE_NET_NAME
 virsh net-autostart $PRE_NET_NAME
 
