@@ -117,7 +117,7 @@ EOF
     virt-install --name $NAME \
     --ram $RAM \
     --vcpus $CPU \
-    --disk $VOLUME_POOL/$NAME/vda.qcow2,format=qcow2 \
+    --disk $VOLUME_POOL/$NAME/vda.qcow2,bus=virtio,format=qcow2 \
     --disk $VOLUME_POOL/$NAME/cloud-init.iso,device=cdrom \
     --network network=$NET_NAME,mac=$MAC \
     --graphics none \
