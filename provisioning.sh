@@ -80,11 +80,11 @@ while read line; do
 
     #convert base image to root disk
     printf "\n =========== Convert Cloud Image ============ \n \n"
-    qemu-img convert -O qcow2 $IMAGE_POOL/$NAME_IMAGE $VOLUME_POOL/$NAME/vda.qcow2
+    qemu-img create -b $IMAGE_POOL/$NAME_IMAGE -F qcow2 -f qcow2 $VOLUME_POOL/$NAME/vda.qcow2 $DISK"G"
     #qemu-img convert -f raw -O qcow2 $IMAGE_POOL/$NAME_IMAGE $VOLUME_POOL/$NAME/vda.qcow2
 
     #resize root disk
-    qemu-img resize $VOLUME_POOL/$NAME/vda.qcow2 $DISK"G"
+    # qemu-img resize $VOLUME_POOL/$NAME/vda.qcow2 $DISK"G"
 
     cat > $VOLUME_POOL/$NAME/user-data << EOF
 #cloud-config
