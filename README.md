@@ -28,7 +28,7 @@ sudo dnf instal genisoimage
 2. Clone repository
 
 ```bash
-git clone https://github.com/ajinfajrian/provisioning-instance_with_bash.git
+git clone https://github.com/ngurah-bagus-trisna/provisioning-instance_with_bash.git
 ```
 
 3. Create volume pool, and image pool
